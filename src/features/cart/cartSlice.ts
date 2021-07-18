@@ -21,7 +21,7 @@ const initialState: CartState = {
   checkoutStatus: CheckoutStatus.Ready,
 }
 
-export const checkoutCart = createAsyncThunk('cart/checkoutCartStatus', checkout)
+export const checkoutCart = createAsyncThunk('cart/checkoutCart', checkout)
 
 const cartSlice = createSlice({
   name: 'cart',
