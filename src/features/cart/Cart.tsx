@@ -7,7 +7,7 @@ import {
   checkoutCart,
   CheckoutStatus,
   getCartItems,
-  getCheckoutErrorMessage,
+  getCheckoutMessage,
   getCheckoutStatus,
   getProducts,
   removeItem,
@@ -22,7 +22,7 @@ export function Cart() {
   const items = useAppSelector(getCartItems)
   const totalPrice = useAppSelector(selectTotalPrice)
   const checkoutStatus = useAppSelector(getCheckoutStatus)
-  const checkoutErrorMessage = useAppSelector(getCheckoutErrorMessage)
+  const checkoutMessage = useAppSelector(getCheckoutMessage)
 
   const tableClassNames = classNames(styles.table, {
     [styles.checkoutError]: checkoutStatus === CheckoutStatus.Error,
@@ -87,7 +87,7 @@ export function Cart() {
           </tr>
         </tfoot>
       </table>
-      <p className={statusBoxClassNames}>{checkoutErrorMessage}</p>
+      <p className={statusBoxClassNames}>{checkoutMessage}</p>
       <form onSubmit={onCheckout}>
         <button className={styles.button} type='submit'>
           Checkout

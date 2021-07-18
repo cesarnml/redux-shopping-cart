@@ -72,7 +72,7 @@ export const { incrementItem, updateItem, removeItem } = cartSlice.actions
 // Helper selectors
 export const getCartItems = (state: RootState) => state.cart.items
 export const getCheckoutStatus = (state: RootState) => state.cart.checkoutStatus
-export const getCheckoutErrorMessage = (state: RootState) => state.cart.checkoutMessage
+export const getCheckoutMessage = (state: RootState) => state.cart.checkoutMessage
 
 export const getProducts = (state: RootState) => state.products.products
 
