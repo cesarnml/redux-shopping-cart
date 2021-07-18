@@ -1,36 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { getProducts, Product } from "../../app/api";
-import styles from "./Products.module.css";
+import React, { useEffect } from 'react'
+import { fetchProducts } from '../../app/api'
+import { useAppDispatch, useAppSelector } from '../../app/hooks'
+import { incrementItem } from '../cart/cartSlice'
+import styles from './Products.module.css'
+import { addProducts } from './productsSlice'
 
 export function Products() {
-  const [products, setProducts] = useState<Product[]>([]);
+  // const [products, setProducts] = useState<Product[]>([])
+  const dispatch = useAppDispatch()
+
   useEffect(() => {
-    getProducts().then((products) => {
-      setProducts(products);
-    });
-  }, []);
+    fetchProducts().then((products) => {
+      // setProducts(products);
+      dispatch(addProducts(products))
+    })
+  }, [])
+
+  const products = useAppSelector((state) => state.products.products)
+
   return (
-    <main className="page">
+    <main className='page'>
       <ul className={styles.products}>
-        {products.map((product) => (
+        {Object.values(products).map((product) => (
           <li key={product.id}>
             <article className={styles.product}>
               <figure>
                 <img src={product.imageURL} alt={product.imageAlt} />
-                <figcaption className={styles.caption}>
-                  {product.imageCredit}
-                </figcaption>
+                <figcaption className={styles.caption}>{product.imageCredit}</figcaption>
               </figure>
               <div>
                 <h1>{product.name}</h1>
                 <p>{product.description}</p>
                 <p>${product.price}</p>
-                <button>Add to Cart 🛒</button>
+                <button onClick={() => dispatch(incrementItem(product.id))}>Add to Cart 🛒</button>
               </div>
             </article>
           </li>
         ))}
       </ul>
     </main>
-  );
+  )
 }
