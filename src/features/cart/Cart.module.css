@@ -42,3 +42,11 @@
 .errorBox {
   color: red;
 }
+
+.submittingBox {
+  color: green;
+}
+
+.successBox {
+  color: blue;
+}

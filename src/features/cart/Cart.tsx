@@ -7,6 +7,7 @@ import {
   checkoutCart,
   CheckoutStatus,
   getCartItems,
+  getCheckoutErrorMessage,
   getCheckoutStatus,
   getProducts,
   removeItem,
@@ -21,13 +22,20 @@ export function Cart() {
   const items = useAppSelector(getCartItems)
   const totalPrice = useAppSelector(selectTotalPrice)
   const checkoutStatus = useAppSelector(getCheckoutStatus)
+  const checkoutErrorMessage = useAppSelector(getCheckoutErrorMessage)
 
   const tableClassNames = classNames(styles.table, {
     [styles.checkoutError]: checkoutStatus === CheckoutStatus.Error,
     [styles.checkoutLoading]: checkoutStatus === CheckoutStatus.Loading,
   })
 
-  const submit = (e) => {
+  const statusBoxClassNames = classNames({
+    [styles.errorBox]: checkoutStatus === CheckoutStatus.Error,
+    [styles.submittingBox]: checkoutStatus === CheckoutStatus.Loading,
+    [styles.successBox]: checkoutStatus === CheckoutStatus.Success,
+  })
+
+  const onCheckout = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     dispatch(checkoutCart(items))
   }
@@ -79,7 +87,8 @@ export function Cart() {
           </tr>
         </tfoot>
       </table>
-      <form onSubmit={submit}>
+      <p className={statusBoxClassNames}>{checkoutErrorMessage}</p>
+      <form onSubmit={onCheckout}>
         <button className={styles.button} type='submit'>
           Checkout
         </button>

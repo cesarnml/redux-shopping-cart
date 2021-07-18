@@ -1,17 +1,19 @@
-import { createSelector, createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { keys, map, sum, values } from 'lodash'
+import { checkout } from '../../app/api'
 import { RootState } from '../../app/store'
-import { CartItems, checkout } from '../../app/api'
 
 export enum CheckoutStatus {
   Ready = 'READY',
   Loading = 'LOADING',
   Error = 'ERROR',
+  Success = 'SUCCESS',
 }
 
 export type CartState = {
   items: { [productID: string]: number }
   checkoutStatus: CheckoutStatus
+  checkoutMessage?: string
 }
 
 const initialState: CartState = {
@@ -32,6 +34,8 @@ const cartSlice = createSlice({
       } else {
         state.items[productID] = 1
       }
+      state.checkoutStatus = CheckoutStatus.Ready
+      state.checkoutMessage = ''
     },
     updateItem(state, action: PayloadAction<{ id: string; quantity: number }>) {
       const { id, quantity } = action.payload
@@ -43,14 +47,21 @@ const cartSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(checkoutCart.fulfilled, (state) => {
-      state.checkoutStatus = CheckoutStatus.Ready
+    builder.addCase(checkoutCart.fulfilled, (state, action: PayloadAction<{ success: boolean }>) => {
+      const { success } = action.payload
+      if (success) {
+        state.checkoutStatus = CheckoutStatus.Success
+        state.checkoutMessage = 'Checkout Successful! 🎉'
+        state.items = {}
+      }
     })
     builder.addCase(checkoutCart.pending, (state) => {
       state.checkoutStatus = CheckoutStatus.Loading
+      state.checkoutMessage = 'Submitting...'
     })
-    builder.addCase(checkoutCart.rejected, (state) => {
+    builder.addCase(checkoutCart.rejected, (state, action) => {
       state.checkoutStatus = CheckoutStatus.Error
+      state.checkoutMessage = action.error.message
     })
   },
 })
@@ -61,6 +72,7 @@ export const { incrementItem, updateItem, removeItem } = cartSlice.actions
 // Helper selectors
 export const getCartItems = (state: RootState) => state.cart.items
 export const getCheckoutStatus = (state: RootState) => state.cart.checkoutStatus
+export const getCheckoutErrorMessage = (state: RootState) => state.cart.checkoutMessage
 
 export const getProducts = (state: RootState) => state.products.products
 
